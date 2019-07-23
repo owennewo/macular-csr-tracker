@@ -1,0 +1,9 @@
+html, body {
+    height:100%;
+    width:100%;
+}
+
+.small {
+    font: italic 12px serif; fill: red; 
+    font-size: 48em;
+}

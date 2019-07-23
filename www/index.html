@@ -1,0 +1,102 @@
+<!--?xml version="1.0" encoding="UTF-8"?-->
+<!DOCTYPE html PUBLIC "-//CL//DTD XHTML 1.0 Transitional plus Embed//EN" "http://www.w3.org/Graphics/xhtml1-transitional-plus-embed.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+ <link rel="stylesheet" type="text/css" href="styles.css"> 
+ <title>Macula CSR (Central Serous Retinopathy) Tracker	 </title>
+ </head>
+ <body class="bodytext">
+
+	<div class="slidecontainer" style="float: left;">
+		<div style="float: left;">
+				<div>Corona Size: <span id="coronaSizeSpan"></span>%</div>
+				<input id="coronaSizeSlider" type="range" min="0" max="100" value="50" class="slider" onchange="onCoronaSizeChange()" step="2" >
+				
+		</div>
+		<div style="float: left;">
+				<div>Corona Strength: <span id="coronaStrengthSpan"></span>%</div>
+				<input id="coronaStrengthSlider" type="range" min="-400" max="400" value="50" class="slider" onchange="onCoronaStrengthChange()" step="2" >
+				
+		</div>
+		<div style="float: left;">
+				<div>imageType</div>
+				<label>Words
+					<input type="radio" id="radioWords" name="imageType" value="words" onchange="onChangeImage()">
+				</label>
+				<label>Grid
+					<input type="radio" id="radioGrid" name="imageType" value="grid" onchange="onChangeImage()">
+				</label>
+		</div>
+	</div>
+
+
+	<svg version="1.1" baseProfile="full" id="svg-root" width="100%" height="100%" >
+	 <defs>
+		<pattern id="wordsPattern" patternUnits="userSpaceOnUse" height="30" width="550" >
+			<rect x="0" width="550" y="30" height="30" fill="yellow"/>
+			<text x="20" y="25" font-size="20px" fill="gray">The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog</text>  
+		</pattern>
+
+		<pattern id="smallGrid" patternUnits="userSpaceOnUse" height="10" width="10" >
+			<path id="svg_4" stroke-width="1" stroke="gray" fill="none" d="m10,0l-10,0l0,10"/>
+		</pattern>
+		<pattern  id="grid" patternUnits="userSpaceOnUse" height="100" width="100" >
+			<rect id="svg_5" fill="url(#smallGrid)" height="100" width="100"/>
+			<path id="svg_6" stroke="gray" stroke-width="4" fill="none" d="m100,0l-100,0l0,100"/>
+		</pattern>
+
+		<pattern id="star" stroke="steelblue" stroke-width="5" stroke-linecap="round" height="100" width="100" >
+			<line x1="100" y1="250" x2="400" y2="250" transform="rotate(0  250 250)" />
+			<line x1="100" y1="250" x2="400" y2="250" transform="rotate(180  250 250)" />
+			<line x1="100" y1="250" x2="400" y2="250" transform="rotate(45   250 250)" />
+			<line x1="100" y1="250" x2="400" y2="250" transform="rotate(-45  250 250)" />
+			<line x1="100" y1="250" x2="400" y2="250" transform="rotate(90   250 250)" />
+			<line x1="100" y1="250" x2="400" y2="250" transform="rotate(-90  250 250)" />
+			<line x1="100" y1="250" x2="400" y2="250" transform="rotate(135  250 250)" />
+			<line x1="100" y1="250" x2="400" y2="250" transform="rotate(-135 250 250)" />
+		</pattern>
+			 
+
+		<!-- <filter id="DispMapChecker" filterUnits="objectBoundingBox" x="0" y="0" width="1" height="1">
+	   		<feImage xlink:href="./images/DisplaceChecker.png"/>
+		</filter> -->
+
+		<filter id="SphereMap" filterUnits="objectBoundingBox" x="0" y="0" width="1" height="1">
+			<feImage id="sphereMap" xlink:href=""/>
+		</filter> 
+		<filter id="SphereMapTest" filterUnits="objectBoundingBox" x="0" y="0" width="1"  height="1">
+			<!-- <feFlood flood-color="yellow" /> -->
+			<!-- <feComposite in="SourceGraphic" operator="xor" /> -->
+			<feImage id="sphereMap2" result="Map" xlink:href=""/>
+			<!-- <feImage result="Texture" xlink:href="data:image/png;base64,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"/> -->
+			<feDisplacementMap id="displacementMap" in="SourceGraphic" in2="Map" scale="60" xChannelSelector="R" yChannelSelector="G"/>
+			<!-- <feGaussianBlur  stdDeviation="0.0" /> -->
+			<!-- <feComponentTransfer >
+				<feFuncR type="linear" slope="-15" intercept="7"></feFuncR>
+				<feFuncG type="linear" slope="-15" intercept="7"></feFuncG>
+				<feFuncB type="linear" slope="-15" intercept="7"></feFuncB>
+			</feComponentTransfer> -->
+
+			<feColorMatrix 
+			type="matrix"
+			values="0.25   0   0   0   0
+					 0   0.25  0   0   0
+					 0    0  0.25  0   0
+					0.75  0.75 0.75  1   0" />
+		</filter>
+	 </defs>
+ 
+
+	<!-- <use xlink:href="#words" x="10" y="10"/> -->
+	<rect x="0" y="0" width="502" height="502" filter="url(#SphereMap)" />
+	<rect id="goodImage" x="600" y="0" width="502" height="502" fill="url(#wordsPattern)"/>
+	<rect id="badImage" x="1200" y="0" width="502" height="502" fill="url(#wordsPattern)" filter="url(#SphereMapTest)" style:"filter: contrast(200%);"/>
+	
+	
+
+</svg>
+
+<script src="displacement.js"></script>
+
+</body></html>
